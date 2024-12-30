@@ -1,0 +1,2 @@
+read input
+killall "$input"
