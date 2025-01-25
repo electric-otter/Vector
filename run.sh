@@ -1,7 +1,8 @@
 #!/bin/bash
+
 read input
 if command -v "$input" &>/dev/null; then
-exec "$input"
-fi
+    exec "$input"
 else
-echo "Vector input error. What you typed: $input, If you think this is a bug in the vector language dont hesitate to report a issue in our repository."
+    echo "Vector input error. What you typed: $input, If you think this is a bug in the vector language, don't hesitate to report an issue in our repository."
+fi
