@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 double expression(void);
 
@@ -19,11 +20,11 @@ void expect(char c) { // expect char c from stream
 double factor(void) { // read a factor
     double f;
     char c = peek();
-    if (c == '(') { // an expression inside parantesis?
+    if (c == '(') { // an expression inside parentheses?
         expect('(');
         f = expression();
         expect(')');
-    } else if (c >= 'A' && c <= 'Z') { // a variable ?
+    } else if (c >= 'A' && c <= 'Z') { // a variable?
         expect(c);
         f = vars[c - 'A'];
     } else { // or, a number?
@@ -61,9 +62,9 @@ double expression(void) { // read an expression
 double statement(void) { // read a statement
     double ret;
     char c = peek();
-    if (c >= 'A' && c <= 'Z') { // variable ?
+    if (c >= 'A' && c <= 'Z') { // variable?
         expect(c);
-        if (peek() == '=') { // assignment ?
+        if (peek() == '=') { // assignment?
             expect('=');
             double val = expression();
             vars[c - 'A'] = val;
@@ -79,12 +80,32 @@ double statement(void) { // read a statement
     return ret;
 }
 
-int main(void) {
-    printf("> "); fflush(stdout);
-
-    for (;;) {
+void execute_file(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        fprintf(stderr, "Error: Could not open file %s.\n", filename, "This is probably non function files, or it is invalid.");
+        exit(EXIT_FAILURE);
+    }
+    int c;
+    while ((c = fgetc(file)) != EOF) {
+        ungetc(c, stdin);
         double v = statement();
-        printf(" = %lf\n> ", v); fflush(stdout);
+        printf(" = %lf\n", v); fflush(stdout);
+    }
+    fclose(file);
+}
+
+int main(int argc, char *argv[]) {
+    if (argc > 1) {
+        for (int i = 1; i < argc; ++i) {
+            execute_file(argv[i]);
+        }
+    } else {
+        printf("> "); fflush(stdout);
+        for (;;) {
+            double v = statement();
+            printf(" = %lf\n> ", v); fflush(stdout);
+        }
     }
     return EXIT_SUCCESS;
 }
